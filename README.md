@@ -1,13 +1,19 @@
 # Chinese Dialect Transformation using Deep Learning
 
+This project is initiated for the purpose of taking part in a [hackathon](https://mp.weixin.qq.com/s/6OOS_1NCjJTGulSHiuuTyw). The theme was highway logistics, and our team thought it'd be cool to transform a local dialect into standard mandarin Chinese while preserving the speakers' vocal features. 
+
+The result came out not too bad, we had a good time, we showed off the audience with what our algorithm can do and got the only round of spontaneous applause that day, and came in 3rd place. 
+
 ## Abstract
 
 Dialects in different regions of China are so distinct that they can cause considerable communication misunderstandings. To this end, this project attempts to transform the soundwaves of speeches spoken in Chengdu dialect into mandarin Chinese while preserving 
-the original speed and intonation. The methodology adopted is a modified version of **wavenet** which is used in a variety range of applications, such as sound-to-text and music generation. 
+the original vocal features, such as speed and intonation. The methodology adopted is a modified version of **wavenet** which is used in a variety range of applications, such as sound-to-text and music generation. 
 
 中国方言众多, 且多大相径庭, 不同方言之间交流极为困难. 所以该项目尝试将成都话的原始音频数据转化为普通话, 并且保留其原始语速和语调. 实现方法基于应用广泛的**wavenet**, 该项目在此基础上做了部分调整.
 
 ## Neural network architecture
+
+![architecture](dilation.png)
 
 The basis of the neural network architecture used is wavenet, with a few modifications to better suit this particular problem. 
 
@@ -17,6 +23,11 @@ In the original wavenet architecture, the dilated convolutions are applied on in
 
 原始的wavenet结构使用了核尺寸为2的扩展型卷积, 并且每个新的节点值是通过在上一层网络中的一个当前节点和一个前置节点计算得出, 该设计使神经网络形成了非对称的结构, 保持了神经网络的因果性. 而调整后的模型打破了因果性, 使用核尺寸为3的扩展性卷积作为计算方法, 且每个节点是通过前置, 当前, 后置节点的值计算得出, 该设计形成了对称的结构. 如此设计的原因是基于如下的事实: 在一句话中某个字的发音并不仅仅取决于已经说过的字, 还取决于即将说的内容. 
 
+![residual block](residual.png)
+
+The above figure displays a component that is repeatedly used in the achitecture, called **residual block**. It is used 30 times in this project, each time the convolution dilation increases exponentially to have the model learn correlations between values further back in the history as well as the ones in the future. 
+
 ## Current status
 
 Due to the lack of training data, the current model cannot generalize to arbitrary speakers other than the ones who recorded the training data, or phrases that have not appeared. 
+
